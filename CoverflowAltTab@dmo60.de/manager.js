@@ -12,6 +12,7 @@ const ExtensionUtils = imports.misc.extensionUtils;
 const CoverflowAltTab = ExtensionUtils.getCurrentExtension();
 
 const Switcher = CoverflowAltTab.imports.switcher;
+const Win7Switcher = CoverflowAltTab.imports.win7switcher;
 
 /**
  * This class handles window events, so we can keep a stack of windows ordered
@@ -91,7 +92,7 @@ Manager.prototype = {
 					currentIndex = -1;
 				}
 				
-				let switcher = new Switcher.Switcher(windows, actions, mask, currentIndex);
+				let switcher = new Win7Switcher.Switcher(windows, actions, mask, currentIndex);
 			};
 		},
 };
