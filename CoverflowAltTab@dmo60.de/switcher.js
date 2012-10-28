@@ -223,7 +223,6 @@ Switcher.prototype = {
 				this._windowTitle.clutter_text.width = monitor.width - 200;
 			}
 			this._windowTitle.add_style_class_name('run-dialog');
-			this._windowTitle.add_style_class_name('coverflow-window-title-label');
 			this.actor.add_actor(this._windowTitle);
 			Tweener.addTween(this._windowTitle, {
 				opacity: loop ? 0 : 255,
