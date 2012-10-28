@@ -18,7 +18,7 @@ const Pango = imports.gi.Pango;
 const WINDOWPREVIEW_SCALE = 0.5;
 const POSITION_TOP = 1;
 const POSITION_BOTTOM = 7;
-
+const ANIMATION_TIME = 0.25;
 const INITIAL_DELAY_TIMEOUT = 150;
 
 
@@ -69,8 +69,14 @@ Switcher.prototype = {
 			this._dcid = this._shellwm.connect('destroy', Lang.bind(this, this._windowDestroyed));
 			this._mcid = this._shellwm.connect('map', Lang.bind(this, this._activateSelected));
 			
+			this._background = Meta.BackgroundActor.new_for_screen(global.screen);
+	        this._background.hide();
+	        global.overlay_group.add_actor(this._background);
+			
+	        // create a container for all our widgets
 			this.actor = new St.Widget({ visible: true, reactive: true, });
-			Main.uiGroup.add_actor(this.actor);
+			this.actor.hide();
+			global.overlay_group.add_actor(this.actor);
 			
 			if (!Main.pushModal(this.actor)) {
 				return false;
@@ -100,33 +106,8 @@ Switcher.prototype = {
 		show: function() {			
 			let monitor = Main.layoutManager.primaryMonitor;
 			
-			// background
-			this._background = new St.Widget({
-				style_class: 'coverflow-switcher',
-				visible: true,
-				reactive: true,
-				x: 0,
-				y: 0,
-				opacity: 0,
-				width: monitor.width,
-				height: monitor.height
-			});
-			
-			// background gradient
-			this._background.add_actor(new St.Bin({
-				style_class: 'coverflow-switcher-gradient',
-				visible: true,
-				reactive: true,
-				x: 0,
-				y: monitor.height / 2,
-				width: monitor.width,
-				height: monitor.height / 2
-			}));
-			this.actor.add_actor(this._background);
-
 			// create previews
 			let currentWorkspace = global.screen.get_active_workspace();
-			this._previewLayer = new St.Widget({ visible: true, reactive: true });
 			this._previews = [];
 			for (i in this._windows) {
 				let metaWin = this._windows[i];
@@ -156,24 +137,21 @@ Switcher.prototype = {
 					clone.target_height_side = clone.target_height;
 										
 					this._previews.push(clone);
-					this._previewLayer.add_actor(clone);
+					this.actor.add_actor(clone);
 				};
 			}
-
-			this.actor.add_actor(this._previewLayer);
+			
+			// hide windows and show Coverflow actors
+			global.window_group.hide();
+			Main.panel.actor.hide();
 			this.actor.show();
-
-			// hide all window actors
-			let windows = global.get_window_actors();
-			for (i in windows) {
-				windows[i].hide();
-			}
-
-			Tweener.addTween(this._background, {
-				opacity: 255,
-				time: 0.25,
-				transition: 'easeOutQuad',
-			});
+			this._background.show();
+	        
+			Tweener.addTween(this._background,
+                    { dim_factor: 0.4,
+                      time: ANIMATION_TIME,
+                      transition: 'easeOutQuad'
+                    });
 			
 			this._initialDelayTimeoutId = 0;
 			
@@ -216,7 +194,8 @@ Switcher.prototype = {
 				loop = false;
 			}
 			// on a loop, we want a faster and linear animation
-			let animation_time = loop ? 0.0 : 0.25;
+			// (currently time = 0, so there is no animation at all) 
+			let animation_time = loop ? 0.0 : ANIMATION_TIME;
 			let transition_type = loop ? 'linear' : 'easeOutQuad';
 			
 			let monitor = Main.layoutManager.primaryMonitor;
@@ -227,7 +206,7 @@ Switcher.prototype = {
 					opacity: 0,
 					time: animation_time,
 					transition: transition_type,
-					onComplete: Lang.bind(this._background, this._background.remove_actor, this._windowTitle),
+					onComplete: Lang.bind(this.actor, this.actor.remove_actor, this._windowTitle),
 				});
 			}
 			this._windowTitle = new St.Label({
@@ -245,7 +224,7 @@ Switcher.prototype = {
 			}
 			this._windowTitle.add_style_class_name('run-dialog');
 			this._windowTitle.add_style_class_name('coverflow-window-title-label');
-			this._background.add_actor(this._windowTitle);
+			this.actor.add_actor(this._windowTitle);
 			Tweener.addTween(this._windowTitle, {
 				opacity: loop ? 0 : 255,
 				time: animation_time,
@@ -258,7 +237,7 @@ Switcher.prototype = {
 					opacity: 0,
 					time: animation_time,
 					transition: transition_type,
-					onComplete: Lang.bind(this._background, this._background.remove_actor, this._applicationIconBox),
+					onComplete: Lang.bind(this.actor, this.actor.remove_actor, this._applicationIconBox),
 				});
 			}
 			let app = this._tracker.get_window_app(this._windows[this._currentIndex]); 
@@ -281,7 +260,7 @@ Switcher.prototype = {
 				y: this._windowTitle.y
 			});
 			this._applicationIconBox.add_actor(this._icon);
-			this._background.add_actor(this._applicationIconBox);
+			this.actor.add_actor(this._applicationIconBox);
 			Tweener.addTween(this._applicationIconBox, {
 				opacity: loop ? 0 : 255,
 				time: animation_time,
@@ -306,7 +285,7 @@ Switcher.prototype = {
 						height: preview.target_height,
 						rotation_angle_y: 0.0,
 						time: animation_time,
-						transition: transition_type,
+						transition: transition_type
 					});
 					
 				} else if (i < this._currentIndex) {
@@ -321,7 +300,7 @@ Switcher.prototype = {
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: 60.0,
 						time: animation_time,
-						transition: transition_type,
+						transition: transition_type
 					});
 					
 				} else if (i > this._currentIndex) {
@@ -449,21 +428,16 @@ Switcher.prototype = {
 		},
 
 		_onHideBackgroundCompleted: function() {
-			Main.uiGroup.remove_actor(this.actor);
+			global.overlay_group.remove_actor(this.actor);
+			global.overlay_group.remove_actor(this._background);
 
 			// show all window actors
-			let currentWorkspace = global.screen.get_active_workspace();
-			let windows = global.get_window_actors();
-			for (i in windows) {
-				let metaWin = windows[i].get_meta_window();
-				if (metaWin.get_workspace() == currentWorkspace || metaWin.is_on_all_workspaces()) {
-					windows[i].show();
-				}
-			};
+			global.window_group.show();
 		},
 
 		_onDestroy: function() {
 			let monitor = Main.layoutManager.primaryMonitor;
+//			Main.panel.actor.show();
 			
 			if (this._initialDelayTimeoutId == 0) {
 				// preview windows
@@ -492,19 +466,24 @@ Switcher.prototype = {
 						width: (metaWin.minimized) ? 0 : compositor.width,
 						height: (metaWin.minimized) ? 0 : compositor.height,
 						rotation_angle_y: 0.0,
-						time: 0.25,
+						time: ANIMATION_TIME,
 						transition: 'easeOutQuad',
 					});
 				}
+				
+				// window title and icon
+				this._windowTitle.hide();
+				this._applicationIconBox.hide();
 	
 				// background
 				Tweener.removeTweens(this._background);
 				Tweener.addTween(this._background, {
-					opacity: 0,
-					time: 0.25,
+					dim_factor: 1.0,
+					time: ANIMATION_TIME,
 					transition: 'easeOutQuad',
 					onComplete: Lang.bind(this, this._onHideBackgroundCompleted),
 				});
+				
 			}
 
 			if (this._haveModal) {
@@ -522,7 +501,6 @@ Switcher.prototype = {
 			this._icon = null;
 			this._applicationIconBox = null;
 			this._previews = null;
-			this._previewLayer = null;
 			this._initialDelayTimeoutId = null;
 		},
 
