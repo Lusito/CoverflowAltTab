@@ -393,7 +393,6 @@ Switcher.prototype = {
 		},
 		
 		_windowDestroyed: function(shellwm, actor) {
-			global.log("destroyed");
 			let window = actor.meta_window;
 			
 			for (i in this._windows) {
