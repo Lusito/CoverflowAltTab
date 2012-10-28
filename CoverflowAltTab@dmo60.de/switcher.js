@@ -143,7 +143,7 @@ Switcher.prototype = {
 			
 			// hide windows and show Coverflow actors
 			global.window_group.hide();
-			Main.panel.actor.hide();
+//			Main.panel.actor.hide();
 			this.actor.show();
 			this._background.show();
 	        
