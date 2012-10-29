@@ -1,6 +1,6 @@
 /* CoverflowAltTab
  *
- * Preference dialog for gnome-shell-extensions-prefs tool
+ * Preferences dialog for gnome-shell-extensions-prefs tool
  */
 
 const Gtk = imports.gi.Gtk;
@@ -20,7 +20,7 @@ function buildPrefsWidget() {
 	let frame = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, border_width: 10 });
 	
 	let panel_switch = buildSwitcher("hide-panel", "Hide panel during Coverflow");
-	frame.add(panel_switcher);
+	frame.add(panel_switch);
 	
 	let time_range = buildRange("animation-time", [100, 400, 10, 250], "Animation speed (smaller means faster)");
 	frame.add(time_range);
@@ -70,4 +70,4 @@ function buildRange(key, values, labeltext, tooltip) {
     hbox.add(range);
     
     return hbox;
-}
+};
