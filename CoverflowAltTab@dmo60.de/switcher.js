@@ -15,10 +15,19 @@ const Main = imports.ui.main;
 const Tweener = imports.ui.tweener;
 const Pango = imports.gi.Pango;
 
+const CoverflowAltTab = imports.misc.extensionUtils.getCurrentExtension();
+const Lib = CoverflowAltTab.imports.lib;
+
+const SCHEMA = "org.gnome.shell.extensions.coverflowalttab";
+
+let settings = Lib.getSettings(SCHEMA);
+let animation_time = settings.get_int("animation-time") / 1000;
+let hide_panel = settings.get_boolean("hide-panel");
+let dim_factor = settings.get_int("dim-factor") / 10;
+
 const WINDOWPREVIEW_SCALE = 0.5;
 const POSITION_TOP = 1;
 const POSITION_BOTTOM = 7;
-const ANIMATION_TIME = 0.25;
 const INITIAL_DELAY_TIMEOUT = 150;
 
 
@@ -143,13 +152,20 @@ Switcher.prototype = {
 			
 			// hide windows and show Coverflow actors
 			global.window_group.hide();
-//			Main.panel.actor.hide();
 			this.actor.show();
 			this._background.show();
 	        
+			if (hide_panel) {
+				Tweener.addTween(Main.panel.actor, 
+					{ opacity: 0,
+					  time: animation_time,
+					  transistion: 'easeOutQuad'}
+				);
+			}
+			
 			Tweener.addTween(this._background,
-                    { dim_factor: 0.4,
-                      time: ANIMATION_TIME,
+                    { dim_factor: dim_factor,
+                      time: animation_time,
                       transition: 'easeOutQuad'
                     });
 			
@@ -195,7 +211,7 @@ Switcher.prototype = {
 			}
 			// on a loop, we want a faster and linear animation
 			// (currently time = 0, so there is no animation at all) 
-			let animation_time = loop ? 0.0 : ANIMATION_TIME;
+			let flow_time = loop ? 0.0 : animation_time;
 			let transition_type = loop ? 'linear' : 'easeOutQuad';
 			
 			let monitor = Main.layoutManager.primaryMonitor;
@@ -204,7 +220,7 @@ Switcher.prototype = {
 			if (this._windowTitle) {
 				Tweener.addTween(this._windowTitle, {
 					opacity: 0,
-					time: animation_time,
+					time: flow_time,
 					transition: transition_type,
 					onComplete: Lang.bind(this.actor, this.actor.remove_actor, this._windowTitle),
 				});
@@ -226,7 +242,7 @@ Switcher.prototype = {
 			this.actor.add_actor(this._windowTitle);
 			Tweener.addTween(this._windowTitle, {
 				opacity: loop ? 0 : 255,
-				time: animation_time,
+				time: flow_time,
 				transition: transition_type,
 			});
 
@@ -234,7 +250,7 @@ Switcher.prototype = {
 			if (this._applicationIconBox) {
 				Tweener.addTween(this._applicationIconBox, {
 					opacity: 0,
-					time: animation_time,
+					time: flow_time,
 					transition: transition_type,
 					onComplete: Lang.bind(this.actor, this.actor.remove_actor, this._applicationIconBox),
 				});
@@ -262,7 +278,7 @@ Switcher.prototype = {
 			this.actor.add_actor(this._applicationIconBox);
 			Tweener.addTween(this._applicationIconBox, {
 				opacity: loop ? 0 : 255,
-				time: animation_time,
+				time: flow_time,
 				transition: transition_type,
 			});
 
@@ -283,7 +299,7 @@ Switcher.prototype = {
 						width: preview.target_width,
 						height: preview.target_height,
 						rotation_angle_y: 0.0,
-						time: animation_time,
+						time: flow_time,
 						transition: transition_type
 					});
 					
@@ -298,7 +314,7 @@ Switcher.prototype = {
 						width: Math.max(preview.target_width_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: 60.0,
-						time: animation_time,
+						time: flow_time,
 						transition: transition_type
 					});
 					
@@ -313,7 +329,7 @@ Switcher.prototype = {
 						width: Math.max(preview.target_width_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: -60.0,
-						time: animation_time,
+						time: flow_time,
 						transition: transition_type,
 						onCompleteParams: [loop, direction, i],
 						onComplete: this._onUpdateComplete,
@@ -435,7 +451,6 @@ Switcher.prototype = {
 
 		_onDestroy: function() {
 			let monitor = Main.layoutManager.primaryMonitor;
-//			Main.panel.actor.show();
 			
 			if (this._initialDelayTimeoutId == 0) {
 				// preview windows
@@ -464,7 +479,7 @@ Switcher.prototype = {
 						width: (metaWin.minimized) ? 0 : compositor.width,
 						height: (metaWin.minimized) ? 0 : compositor.height,
 						rotation_angle_y: 0.0,
-						time: ANIMATION_TIME,
+						time: animation_time,
 						transition: 'easeOutQuad',
 					});
 				}
@@ -472,12 +487,22 @@ Switcher.prototype = {
 				// window title and icon
 				this._windowTitle.hide();
 				this._applicationIconBox.hide();
-	
+				
+				// panel
+				if (hide_panel) {
+					Tweener.removeTweens(Main.panel.actor);
+					Tweener.addTween(Main.panel.actor, 
+						{ opacity: 255,
+						  time: animation_time,
+						  transistion: 'easeOutQuad'}
+					);
+				}
+				
 				// background
 				Tweener.removeTweens(this._background);
 				Tweener.addTween(this._background, {
 					dim_factor: 1.0,
-					time: ANIMATION_TIME,
+					time: animation_time,
 					transition: 'easeOutQuad',
 					onComplete: Lang.bind(this, this._onHideBackgroundCompleted),
 				});
