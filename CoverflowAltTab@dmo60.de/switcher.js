@@ -24,19 +24,11 @@ let settings = Lib.getSettings(SCHEMA);
 let animation_time = settings.get_int("animation-time") / 1000;
 let hide_panel = settings.get_boolean("hide-panel");
 let dim_factor = settings.get_int("dim-factor") / 10;
+let position = (settings.get_string("position") == "Top") ? 1 : 7;
+let offset = settings.get_int("offset");
 
 const WINDOWPREVIEW_SCALE = 0.5;
-const POSITION_TOP = 1;
-const POSITION_BOTTOM = 7;
 const INITIAL_DELAY_TIMEOUT = 150;
-
-
-/*
- * SET POSITION OF ICON AND WINDOW TITLE HERE: possible values are: POSITION_TOP
- * or POSITION_BOTTOM --------------------------------------------------------
- */
-const ICON_TITLE_POSITION = POSITION_BOTTOM;
-/* -------------------------------------------------------- */
 
 
 /*
@@ -45,15 +37,6 @@ const ICON_TITLE_POSITION = POSITION_BOTTOM;
  */
 const ICON_SIZE = 64;  // default: 64
 const ICON_TITLE_SPACING = 10;  // default: 10
-/* -------------------------------------------------------- */
-
-
-/*
- * SET VERTICAL OFFSET HERE: Positive vlaue means moving everything up, negative
- * down. Default means previews are located in the middle of the screen.
- * --------------------------------------------------------
- */
-const OFFSET = 0;  // default: 0
 /* -------------------------------------------------------- */
 
 
@@ -231,7 +214,7 @@ Switcher.prototype = {
 				opacity: 0,
 				anchor_gravity: Clutter.Gravity.CENTER,
 				x: Math.round((monitor.width + ICON_SIZE + ICON_TITLE_SPACING) / 2),
-				y: Math.round(monitor.height * ICON_TITLE_POSITION / 8 - OFFSET)
+				y: Math.round(monitor.height * position / 8 - offset)
 			});	
 			// ellipsize if title is too long
 			this._windowTitle.clutter_text.ellipsize = Pango.EllipsizeMode.END;
@@ -295,7 +278,7 @@ Switcher.prototype = {
 					Tweener.addTween(preview, {
 						opacity: 255,
 						x: (monitor.width) / 2,
-						y: (monitor.height) / 2 - OFFSET,
+						y: (monitor.height) / 2 - offset,
 						width: preview.target_width,
 						height: preview.target_height,
 						rotation_angle_y: 0.0,
@@ -310,7 +293,7 @@ Switcher.prototype = {
 					Tweener.addTween(preview, {
 						opacity: 255,
 						x: monitor.width * 0.1 + 50 * (i - this._currentIndex),
-						y: monitor.height / 2 - OFFSET,
+						y: monitor.height / 2 - offset,
 						width: Math.max(preview.target_width_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: 60.0,
@@ -325,7 +308,7 @@ Switcher.prototype = {
 					Tweener.addTween(preview, {
 						opacity: 255,
 						x: monitor.width * 0.9 + 50 * (i - this._currentIndex),
-						y: monitor.height / 2 - OFFSET,
+						y: monitor.height / 2 - offset,
 						width: Math.max(preview.target_width_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: -60.0,

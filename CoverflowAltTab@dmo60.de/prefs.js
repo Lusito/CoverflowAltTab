@@ -28,6 +28,12 @@ function buildPrefsWidget() {
 	let dim_range = buildRange("dim-factor", [0, 10, 1, 4], "Background dim-factor (smaller means darker)");
 	frame.add(dim_range);
 	
+	let pos_radio = buildRadio("position", ["Bottom", "Top"], "Position of icon and window titel");
+	frame.add(pos_radio);
+	
+	let offset_spin = buildSpin("offset", [-500, 500, 1, 10], "Set a vertical offset (positive value moves everything up, negative down)");
+	frame.add(offset_spin);
+	
 	frame.show_all();
 	
 	return frame;
@@ -70,4 +76,51 @@ function buildRange(key, values, labeltext, tooltip) {
     hbox.add(range);
     
     return hbox;
+};
+
+function buildRadio(key, buttons, labeltext) {
+	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+	
+	let label = new Gtk.Label({label: labeltext, xalign: 0 });
+	hbox.pack_start(label, true, true, 0);
+	
+	let radio = new Gtk.RadioButton();
+	for (i in buttons) {
+		radio = new Gtk.RadioButton({group: radio, label: buttons[i]});
+		if (buttons[i] == settings.get_string(key)) {
+			radio.set_active(true);
+		}
+		
+		radio.connect('toggled', function(widget) {
+			if (widget.get_active()) {
+				settings.set_string(key, widget.get_label());
+			}
+		});
+		
+		hbox.add(radio);
+	};
+	
+	return hbox;
+};
+
+function buildSpin(key, values, labeltext) {
+	let [min, max, step, page] = values;
+	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+	
+	let label = new Gtk.Label({label: labeltext, xalign: 0 });
+	
+	let spin = new Gtk.SpinButton();
+	spin.set_range(min, max);
+	spin.set_increments(step, page);
+	spin.set_value(settings.get_int(key));
+	
+	spin.connect('value-changed', function(widget) {
+	    settings.set_int(key, widget.get_value());
+	});
+	
+	hbox.pack_start(label, true, true, 0);
+    hbox.add(spin);
+    
+    return hbox;
+	
 };
