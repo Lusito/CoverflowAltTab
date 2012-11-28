@@ -21,6 +21,8 @@ Installation
 
 Make sure you are on the appropriate branch for your Gnome-Shell version (3.6 is the default, there is also one for 3.4 and 3.2) and download the extension.
 
+Please note, that only the most recent version of Gnome-Shell has the latest features and improvements (they might work on older versions, but I did not test it!). 
+
   1. Copy the folder "CoverflowAltTab@dmo60.de" to `~/.local/share/gnome-shell/extensions/`. (Eventually you have to restart Gnome-Shell: Press Alt+F2, type 'r' and enter)
 		
   2. Use Gnome-Tweak-Tool (aka Advanced Settings) or [extensions.gnome.org](https://extensions.gnome.org/local/) to enable the extension.
@@ -61,3 +63,5 @@ Customization
 --------------
 
 Gnome-Shell users can use gnome-shell-extension-prefs tool to set some customization preferences. To do so, go to [extensions.gnome.org](https://extensions.gnome.org/local/) or launch `gnome-shell-extension-prefs` from a terminal.
+
+Make sure you restart Gnome-Shell to apply your changes!
