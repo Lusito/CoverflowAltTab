@@ -27,5 +27,10 @@
         <summary>Set a vertical offset</summary>
         <description>Set a vertical offset. Positive values move the whole Coverflow up, negative down.</description>
     </key>
+    <key type="s" name="icon-style">
+        <default>"Classic"</default>
+        <summary>Icon style</summary>
+        <description>Whether the application icon should be displayed next to the title lable or as an overlay.</description>
+    </key>
   </schema>
 </schemalist>

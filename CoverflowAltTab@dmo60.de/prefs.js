@@ -17,7 +17,7 @@ function init() {
 }
 
 function buildPrefsWidget() {
-	let frame = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, border_width: 10 });
+	let frame = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, border_width: 10, spacing: 10});
 	
 	let panel_switch = buildSwitcher("hide-panel", "Hide panel during Coverflow");
 	frame.add(panel_switch);
@@ -28,10 +28,13 @@ function buildPrefsWidget() {
 	let dim_range = buildRange("dim-factor", [0, 10, 1, 4], "Background dim-factor (smaller means darker)");
 	frame.add(dim_range);
 	
-	let pos_radio = buildRadio("position", ["Bottom", "Top"], "Position of icon and window titel");
+	let pos_radio = buildRadio("position", ["Bottom", "Top"], "Window titel box position");
 	frame.add(pos_radio);
 	
-	let offset_spin = buildSpin("offset", [-500, 500, 1, 10], "Set a vertical offset (positive value moves everything up, negative down)");
+	let icon_radio = buildRadio("icon-style", ["Classic", "Overlay"], "Application icon style");
+	frame.add(icon_radio);
+	
+	let offset_spin = buildSpin("offset", [-500, 500, 1, 10], "Vertical offset (positive value moves everything up, negative down)");
 	frame.add(offset_spin);
 	
 	frame.show_all();
@@ -40,7 +43,7 @@ function buildPrefsWidget() {
 }
 
 function buildSwitcher(key, labeltext, tooltip) {
-	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+	let hbox = new Gtk.Box({orientation: Gtk.Orientation.HORIZONTAL, spacing: 10 });
 	
     let label = new Gtk.Label({label: labeltext, xalign: 0 });
 
@@ -58,7 +61,7 @@ function buildSwitcher(key, labeltext, tooltip) {
 
 function buildRange(key, values, labeltext, tooltip) {
 	let [min, max, step, defv] = values;
-    let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+    let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10 });
 	
     let label = new Gtk.Label({label: labeltext, xalign: 0 });
     
@@ -79,7 +82,7 @@ function buildRange(key, values, labeltext, tooltip) {
 };
 
 function buildRadio(key, buttons, labeltext) {
-	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10 });
 	
 	let label = new Gtk.Label({label: labeltext, xalign: 0 });
 	hbox.pack_start(label, true, true, 0);
@@ -105,7 +108,7 @@ function buildRadio(key, buttons, labeltext) {
 
 function buildSpin(key, values, labeltext) {
 	let [min, max, step, page] = values;
-	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL });
+	let hbox = new Gtk.Box({ orientation: Gtk.Orientation.HORIZONTAL, spacing: 10 });
 	
 	let label = new Gtk.Label({label: labeltext, xalign: 0 });
 	

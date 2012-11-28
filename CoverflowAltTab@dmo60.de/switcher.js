@@ -26,18 +26,20 @@ let hide_panel = settings.get_boolean("hide-panel");
 let dim_factor = settings.get_int("dim-factor") / 10;
 let position = (settings.get_string("position") == "Top") ? 1 : 7;
 let offset = settings.get_int("offset");
+let icon_style = settings.get_string("icon-style");
 
 const WINDOWPREVIEW_SCALE = 0.5;
 const INITIAL_DELAY_TIMEOUT = 150;
 
 
-/*
- * SET ICON SIZE AND SPACING BETWEEN ICON AND WINDOW TITLE HERE:
- * --------------------------------------------------------
- */
+///*
+// * SET ICON SIZE AND SPACING BETWEEN ICON AND WINDOW TITLE HERE:
+// * --------------------------------------------------------
+// */
 const ICON_SIZE = 64;  // default: 64
+const ICON_SIZE_BIG = 128;  // default: 128
 const ICON_TITLE_SPACING = 10;  // default: 10
-/* -------------------------------------------------------- */
+///* -------------------------------------------------------- */
 
 
 
@@ -198,7 +200,17 @@ Switcher.prototype = {
 			let transition_type = loop ? 'linear' : 'easeOutQuad';
 			
 			let monitor = Main.layoutManager.primaryMonitor;
-
+			
+			let app_icon_size;
+			let label_offset;
+			if (icon_style == "Classic") {
+				app_icon_size = ICON_SIZE;
+				label_offset = ICON_SIZE + ICON_TITLE_SPACING;
+			} else {
+				app_icon_size = ICON_SIZE_BIG;
+				label_offset = 0;
+			}
+			
 			// window title label
 			if (this._windowTitle) {
 				Tweener.addTween(this._windowTitle, {
@@ -213,7 +225,7 @@ Switcher.prototype = {
 				text: this._windows[this._currentIndex].get_title(),
 				opacity: 0,
 				anchor_gravity: Clutter.Gravity.CENTER,
-				x: Math.round((monitor.width + ICON_SIZE + ICON_TITLE_SPACING) / 2),
+				x: Math.round((monitor.width + label_offset) / 2),
 				y: Math.round(monitor.height * position / 8 - offset)
 			});	
 			// ellipsize if title is too long
@@ -222,6 +234,7 @@ Switcher.prototype = {
 				this._windowTitle.clutter_text.width = monitor.width - 200;
 			}
 			this._windowTitle.add_style_class_name('run-dialog');
+			this._windowTitle.add_style_class_name('coverflow-window-title-label');
 			this.actor.add_actor(this._windowTitle);
 			Tweener.addTween(this._windowTitle, {
 				opacity: loop ? 0 : 255,
@@ -241,22 +254,33 @@ Switcher.prototype = {
 			let app = this._tracker.get_window_app(this._windows[this._currentIndex]); 
 			this._icon = null;
 			if (app) {
-				this._icon = app.create_icon_texture(ICON_SIZE);
+				this._icon = app.create_icon_texture(app_icon_size);
 			}
 			if (!this._icon) {
 				this._icon = new St.Icon({ 
 					icon_name: 'applications-other',
 					icon_type: St.IconType.FULLCOLOR,
-					icon_size: ICON_SIZE 
+					icon_size: app_icon_size 
 				});
 			}
-			this._applicationIconBox = new St.Bin({ 
-				style_class: 'window-iconbox',
-				opacity: 0,
-				anchor_gravity: Clutter.Gravity.CENTER,
-				x: Math.round(this._windowTitle.x - (this._windowTitle.width + ICON_SIZE) / 2 - ICON_TITLE_SPACING),
-				y: this._windowTitle.y
-			});
+			if (icon_style == "Classic") {
+				this._applicationIconBox = new St.Bin({ 
+					style_class: 'window-iconbox',
+					opacity: 0,
+					anchor_gravity: Clutter.Gravity.CENTER,
+					x: Math.round(this._windowTitle.x - (this._windowTitle.width + app_icon_size) / 2 - ICON_TITLE_SPACING),
+					y: this._windowTitle.y
+			    });
+			} else {
+				this._applicationIconBox = new St.Bin({
+					style_class: 'coverflow-app-icon-box',
+					width: app_icon_size * 1.15,
+					height: app_icon_size * 1.15,
+					opacity: 0,
+					x: (monitor.width - app_icon_size) / 2,
+				    y: (monitor.height - app_icon_size) / 2,
+			    });
+			}
 			this._applicationIconBox.add_actor(this._icon);
 			this.actor.add_actor(this._applicationIconBox);
 			Tweener.addTween(this._applicationIconBox, {
@@ -264,6 +288,7 @@ Switcher.prototype = {
 				time: flow_time,
 				transition: transition_type,
 			});
+			
 
 			// preview windows
 			for (i in this._previews) {
@@ -275,6 +300,7 @@ Switcher.prototype = {
 					preview.move_anchor_point_from_gravity(Clutter.Gravity.CENTER);
 					preview.rotation_center_y = new Clutter.Vertex({ x: rotation_vertex_x, y: 0.0, z: 0.0 });
 					preview.raise_top();
+					this._applicationIconBox.raise(preview);
 					Tweener.addTween(preview, {
 						opacity: 255,
 						x: (monitor.width) / 2,
