@@ -19,18 +19,18 @@ Installation
 
 #### Gnome-Shell ####
 
-Make sure you are on the appropriate branch for your Gnome-Shell version (3.4 is the default, there is also one for 3.2) and download the extension.
+Make sure you are on the appropriate branch for your Gnome-Shell version (3.6 is the default, there is also one for 3.4 and 3.2) and download the extension.
 
-  1. Copy the folder "CoverflowAltTab@dmo60.de" to `~/.local/share/gnome-shell/extensions/`.
+  1. Copy the folder "CoverflowAltTab@dmo60.de" to `~/.local/share/gnome-shell/extensions/`. (Eventually you have to restart Gnome-Shell: Press Alt+F2, type 'r' and enter)
 		
-  2. Use Gnome-Tweak-Tool (aka Advanced Settings) to enable the extension. (Eventually you have to restart Gnome-Shell: Press Alt+F2, type 'r' and enter)
+  2. Use Gnome-Tweak-Tool (aka Advanced Settings) or [extensions.gnome.org](https://extensions.gnome.org/local/) to enable the extension.
 	
 
 #### Cinnamon ####
 
 Switch to branch Cinnamon or head over to [Cinnamon-Spices](http://cinnamon-spices.linuxmint.com/extensions/view/3) to download the extension for Cinnamon. 
 
-  1. Copy the folder "CoverflowAltTab@dmo60.de" to `~/.local/share/cinnamon/extensions/`.
+  1. Copy the folder "CoverflowAltTab@dmo60.de" to `~/.local/share/cinnamon/extensions/`. (Eventually you have to restart Cinnamon: Press Alt+F2, type 'r' and enter)
 	
   2. Enable the extension in Cinnamon Settings. (Eventually you have to restart Cinnamon: Press Alt+F2, type 'r' and enter)
 	 
@@ -60,7 +60,4 @@ You can also use the **arrow keys** or your **mouse wheel** to cycle through the
 Customization
 --------------
 
-You can change the background color and gradient by adjusting the corresponding values in the `stylesheet.css` file.
-
-For those who want, it's also possible to change the position of the window title box (top or bottom), the icon size and spacing and the vertical offset.
-To do so, open the `switcher.js` file within the CoverflowAltTab extensions directory, modify the corresponding lines (they are highlighted) and restart Gnome-Shell/Cinnamon.
+Gnome-Shell users can use gnome-shell-extension-prefs tool to set some customization preferences. To do so, go to [extensions.gnome.org](https://extensions.gnome.org/local/) or launch `gnome-shell-extension-prefs` from a terminal.
