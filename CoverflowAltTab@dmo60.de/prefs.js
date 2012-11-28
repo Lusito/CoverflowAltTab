@@ -19,6 +19,10 @@ function init() {
 function buildPrefsWidget() {
 	let frame = new Gtk.Box({ orientation: Gtk.Orientation.VERTICAL, border_width: 10, spacing: 10});
 	
+	let label = new Gtk.Label({label: "<b>Please restart Gnome-Shell to apply changes! (Hit Alt+F2, type 'r' and press Enter)\n</b>"});
+	label.set_use_markup(true);
+	frame.add(label);
+	
 	let panel_switch = buildSwitcher("hide-panel", "Hide panel during Coverflow");
 	frame.add(panel_switch);
 	
