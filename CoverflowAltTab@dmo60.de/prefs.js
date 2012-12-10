@@ -32,7 +32,7 @@ function buildPrefsWidget() {
 	let dim_range = buildRange("dim-factor", [0, 10, 1, 4], "Background dim-factor (smaller means darker)");
 	frame.add(dim_range);
 	
-	let pos_radio = buildRadio("position", ["Bottom", "Top"], "Window titel box position");
+	let pos_radio = buildRadio("position", ["Bottom", "Top"], "Window title box position");
 	frame.add(pos_radio);
 	
 	let icon_radio = buildRadio("icon-style", ["Classic", "Overlay"], "Application icon style");
