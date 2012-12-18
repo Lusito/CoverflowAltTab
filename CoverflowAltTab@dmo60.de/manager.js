@@ -49,11 +49,10 @@ Manager.prototype = {
 			// sort by user time
 			windows.sort(Lang.bind(this,
 					function(win1, win2) {
-				let t1 = win1.get_user_time();
-				let t2 = win2.get_user_time();
-
-				return (t2 > t1) ? 1 : -1 ;
-				}
+						let t1 = win1.get_user_time();
+						let t2 = win2.get_user_time();
+						return (t2 > t1) ? 1 : -1 ;
+					}
 			));
 
 			// switch between windows of all workspaces
@@ -86,11 +85,11 @@ Manager.prototype = {
 			if (windows.length) {
 				actions['activate_selected'] = this._activateSelectedWindow;
 				actions['remove_selected'] = this._removeSelectedWindow;
-				
+
 				if (!display.focus_window) {
 					currentIndex = -1;
 				}
-				
+
 				let switcher = new Switcher.Switcher(windows, actions, mask, currentIndex);
 			};
 		},
