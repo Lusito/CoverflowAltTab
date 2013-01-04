@@ -225,8 +225,8 @@ Switcher.prototype = {
 				text: this._windows[this._currentIndex].get_title(),
 				opacity: 0,
 				anchor_gravity: Clutter.Gravity.CENTER,
-				x: Math.round((monitor.width + label_offset) / 2),
-				y: Math.round(monitor.height * position / 8 - offset)
+				x: Math.round(monitor.x + (monitor.width + label_offset) / 2),
+				y: Math.round(monitor.y + monitor.height * position / 8 - offset)
 			});	
 			// ellipsize if title is too long
 			this._windowTitle.clutter_text.ellipsize = Pango.EllipsizeMode.END;
@@ -277,8 +277,8 @@ Switcher.prototype = {
 					width: app_icon_size * 1.15,
 					height: app_icon_size * 1.15,
 					opacity: 0,
-					x: (monitor.width - app_icon_size) / 2,
-					y: (monitor.height - app_icon_size) / 2,
+					x: monitor.x + (monitor.width - app_icon_size) / 2,
+					y: monitor.y + (monitor.height - app_icon_size) / 2,
 				});
 			}
 			this._applicationIconBox.add_actor(this._icon);
@@ -302,8 +302,8 @@ Switcher.prototype = {
 					this._applicationIconBox.raise(preview);
 					Tweener.addTween(preview, {
 						opacity: 255,
-						x: (monitor.width) / 2,
-						y: (monitor.height) / 2 - offset,
+						x: monitor.x + (monitor.width) / 2,
+						y: monitor.y + (monitor.height) / 2 - offset,
 						width: preview.target_width,
 						height: preview.target_height,
 						rotation_angle_y: 0.0,
@@ -317,8 +317,8 @@ Switcher.prototype = {
 					preview.raise_top();
 					Tweener.addTween(preview, {
 						opacity: 255,
-						x: monitor.width * 0.1 + 50 * (i - this._currentIndex),
-						y: monitor.height / 2 - offset,
+						x: monitor.x + monitor.width * 0.1 + 50 * (i - this._currentIndex),
+						y: monitor.y + monitor.height / 2 - offset,
 						width: Math.max(preview.target_width_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: 60.0,
@@ -332,8 +332,8 @@ Switcher.prototype = {
 					preview.lower_bottom();
 					Tweener.addTween(preview, {
 						opacity: 255,
-						x: monitor.width * 0.9 + 50 * (i - this._currentIndex),
-						y: monitor.height / 2 - offset,
+						x: monitor.x + monitor.width * 0.9 + 50 * (i - this._currentIndex),
+						y: monitor.y + monitor.height / 2 - offset,
 						width: Math.max(preview.target_width_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						height: Math.max(preview.target_height_side * (10 - Math.abs(i - this._currentIndex)) / 10, 0),
 						rotation_angle_y: -60.0,
@@ -375,6 +375,7 @@ Switcher.prototype = {
 				// Q -> Close window
 			} else if (keysym == Clutter.q || keysym == Clutter.Q) {
 				this._actions['remove_selected'](this._windows[this._currentIndex]);
+				this._windowDestroyed(this._windows[this._currentIndex]);
 				// Left/Right -> navigate through previews	
 			} else if (keysym == Clutter.Right) {
 				this._next();
