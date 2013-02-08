@@ -2,7 +2,7 @@
 <schemalist>
   <schema path="/org/gnome/shell/extensions/coverflowalttab/" id="org.gnome.shell.extensions.coverflowalttab">
     <key type="b" name="hide-panel">
-        <default>false</default>
+        <default>true</default>
         <summary>Hide the panel when showing coverflow</summary>
         <description>Whether to show or hide the panel when CoverflowAltTab is active.</description>
     </key>
@@ -13,7 +13,7 @@
     </key>
     <key type="i" name="dim-factor">
         <range min="0" max="10"/>
-        <default>4</default>
+        <default>3</default>
         <summary>Dim factor for background</summary>
         <description>Define dimming of the background. Smaller means darker. </description>
     </key>

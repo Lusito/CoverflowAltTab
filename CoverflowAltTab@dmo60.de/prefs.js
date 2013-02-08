@@ -29,7 +29,7 @@ function buildPrefsWidget() {
 	let time_range = buildRange("animation-time", [100, 400, 10, 250], "Animation speed (smaller means faster)");
 	frame.add(time_range);
 
-	let dim_range = buildRange("dim-factor", [0, 10, 1, 4], "Background dim-factor (smaller means darker)");
+	let dim_range = buildRange("dim-factor", [0, 10, 1, 3], "Background dim-factor (smaller means darker)");
 	frame.add(dim_range);
 
 	let pos_radio = buildRadio("position", ["Bottom", "Top"], "Window title box position");
