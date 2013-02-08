@@ -38,7 +38,7 @@ const INITIAL_DELAY_TIMEOUT = 150;
 //*/
 const ICON_SIZE = 64;  // default: 64
 const ICON_SIZE_BIG = 128;  // default: 128
-const ICON_TITLE_SPACING = 10;  // default: 10
+const ICON_TITLE_SPACING = 15;  // default: 15
 ///* -------------------------------------------------------- */
 
 
@@ -221,7 +221,7 @@ Switcher.prototype = {
 				});
 			}
 			this._windowTitle = new St.Label({
-				style_class: 'modal-dialog',
+				style_class: 'coverflow-window-title-label',
 				text: this._windows[this._currentIndex].get_title(),
 				opacity: 0,
 				anchor_gravity: Clutter.Gravity.CENTER,
@@ -233,8 +233,7 @@ Switcher.prototype = {
 			if (this._windowTitle.clutter_text.width > (monitor.width - 200)) {
 				this._windowTitle.clutter_text.width = monitor.width - 200;
 			}
-			this._windowTitle.add_style_class_name('run-dialog');
-			this._windowTitle.add_style_class_name('coverflow-window-title-label');
+			
 			this.actor.add_actor(this._windowTitle);
 			Tweener.addTween(this._windowTitle, {
 				opacity: loop ? 0 : 255,
