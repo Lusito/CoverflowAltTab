@@ -230,10 +230,8 @@ Switcher.prototype = {
 				y: Math.round(monitor.y + monitor.height * position / 8 - offset)
 			});	
 			// ellipsize if title is too long
+			this._windowTitle.set_style("max-width:" + (monitor.width - 200) + "px;");
 			this._windowTitle.clutter_text.ellipsize = Pango.EllipsizeMode.END;
-			if (this._windowTitle.clutter_text.width > (monitor.width - 200)) {
-				this._windowTitle.clutter_text.width = monitor.width - 200;
-			}
 			
 			this.actor.add_actor(this._windowTitle);
 			Tweener.addTween(this._windowTitle, {
